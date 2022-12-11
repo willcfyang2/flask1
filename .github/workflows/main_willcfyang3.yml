@@ -70,15 +70,7 @@ jobs:
           path: .
           
 
-      
-      - name: Configure deployment and runtime settings on the webapp
-        run: |
-          az configure --defaults vm=${{ env.RESOURCE_GROUP }}
-          az webapp config appsettings --name 'willcfyang3' --settings \
-              SCM_DO_BUILD_DURING_DEPLOYMENT=true \
-              FLASK_ENV=production 
-          az webapp config set --name 'willcfyang3' \
-            --startup-file "gunicorn --bind=0.0.0.0 --timeout 600 app:app"
+    
             
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
