@@ -21,6 +21,16 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: '3.8'
+          
+      - name: Set up Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12
+
+      - name: Install and build Vue.js project
+        run: |
+          npm install
+          npm run build
 
       - name: Create and start virtual environment
         run: |
@@ -38,6 +48,7 @@ jobs:
           name: python-app
           path: |
             . 
+            !node_modules/
             !venv/
 
   deploy:
@@ -54,6 +65,20 @@ jobs:
           name: python-app
           path: .
           
+      - name: Log in to Azure CLI
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_SERVICE_PRINCIPAL }}
+      
+      - name: Configure deployment and runtime settings on the webapp
+        run: |
+          az configure --defaults ${{ env.RESOURCE_GROUP }}
+          az webapp config appsettings --name ${{ env.WEBAPP_NAME }} --settings \
+              SCM_DO_BUILD_DURING_DEPLOYMENT=true \
+              FLASK_ENV=production 
+          az webapp config set --name ${{ env.WEBAPP_NAME }} \
+            --startup-file "gunicorn --bind=0.0.0.0 --timeout 600 app:app"
+            
       - name: 'Deploy to Azure Web App'
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp
