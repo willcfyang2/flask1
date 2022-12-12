@@ -49,6 +49,7 @@ jobs:
           name: python-app
           path: |
             . 
+            !.git/
             !dist/
             !node_modules/
             !venv/
