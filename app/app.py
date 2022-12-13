@@ -7,7 +7,11 @@ from models import User, ImageFile
 from Languageconversion import en_to_zh, zh_to_en
 from ObjectRecognition import ObjectRecognition
 from imagesRecognition import images_recognition
+import sys
+from flask import send_from_directory
 
+#app = Flask(__name__, static_folder='', static_url_path='', root_path='./dist/')
+#app = Flask(__name__, static_folder='dist')
 app = Flask(__name__)
 db.init_app(app)
 HOSTNAME = '127.0.0.1'
@@ -23,6 +27,11 @@ app.config["SQLALCHEMY_RECORD_QUERIES"] = False
 app.config["SQLALCHEMY_ECHO"] = False
 app.config["SQLALCHEMY_POOL_SIZE"] = 100
 
+@app.route('/')
+def index():
+    print('...')
+    return send_from_directory('.', 'index.html')
+    return app.send_static_file('index.html')
 
 @app.route('/chang/zh', methods=['POST'])
 def zh():
@@ -81,9 +90,9 @@ def test():
 	return jsonify({"data": data, "status": 200})
 
 
-@app.route("/user/create", methods=["POST"])
+@app.route("/user/register", methods=["POST"])
 def user_create():
-	data = request.json.get("data")
+	data = request.form#json.get("data")
 	if not data:
 		return jsonify({"data": "please post args", "status": 400})
 	user = User(**data)
@@ -98,7 +107,7 @@ def user_create():
 
 @app.route("/user/login", methods=["POST"])
 def login():
-	data = request.json.get("data")
+	data = request.form#.get("data")
 	if not data:
 		return jsonify({"data": "please post args", "status": 400})
 	user = User.query.filter_by(username=data["username"], password=data["password"]).first()
@@ -124,6 +133,7 @@ def upload():
 
 
 @app.route("/images/read", methods=["GET"])
+@app.route("/api/images/read", methods=["GET"])
 def read_images():
 	belong_user = request.values.get("uid")
 	images = ImageFile.query.filter_by(belong_user=belong_user).all()
@@ -144,6 +154,17 @@ def dig_count():
 @app.route("/images/comment", methods=["GET"])
 def comment():
 	pass
+'''
+#@app.route('/<path:path>')
+@app.route('/')
+def catch_all():
+    #print(path)
+    app.logger.info("some thing happen")
+    print('path:%s'%path, file=sys.stderr)
+    return send_from_directory('dist', path)
+    #return app.send_static_file(path)
+    #return 'You want path: %s' % path
+'''
 
 
 
