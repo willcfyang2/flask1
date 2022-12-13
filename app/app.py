@@ -14,11 +14,14 @@ from flask import send_from_directory
 #app = Flask(__name__, static_folder='dist')
 app = Flask(__name__)
 db.init_app(app)
-HOSTNAME = '127.0.0.1'
+#HOSTNAME = '127.0.0.1'
+HOSTNAME = 'flask-vue-simple-mysql.mysql.database.azure.com'
 PORT = '3306'
 DATABASE = 'flask'
-USERNAME = 'root'
-PASSWORD = '123456'
+#USERNAME = 'root'
+#PASSWORD = '123456'
+USERNAME = 'chaox'
+PASSWORD = 'flask-server-vue123456'
 DB_URI = 'mysql+pymysql://{}:{}@{}:{}/{}?charset=utf8'.format(USERNAME,PASSWORD,HOSTNAME,PORT,DATABASE)
 app.config['SQLALCHEMY_DATABASE_URI'] = DB_URI
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
